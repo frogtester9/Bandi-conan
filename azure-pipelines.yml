@@ -65,8 +65,8 @@ stages:
         displayName: 'Conan Add Remote'
         inputs:
           conanCommand: 'Add Remote'
-          remoteName: jfrog
-          artifactoryService: Artifactory
+          remoteName: frogtester@9
+          artifactoryService: bandi-conan-vignesh
           conanRepo: conan.local
           purgeExistingRemotes: true
           conanUserHome: '$(build.artifactstagingdirectory)'
