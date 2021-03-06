@@ -1,32 +1,84 @@
-# Python to Linux Web App on Azure
-# Build your Python project and deploy it to Azure as a Linux Web App.
-# Change python version to one thats appropriate for your application.
-# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+name: $(Date:yyyyMMdd)$(Rev:.r)
 
 trigger:
+- master
+- release/*
 - develop
+- feature/*
+  
+  
+variables:
+  - group: Artifactory
+  - name: projectName
+    value: DeleteMe
+  - name: channel
+    value: Experimental
 
-  # Web app name
-  webAppName: 'Testing'
+pool:
+  vmImage: 'Ubuntu-18.04'
 
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
-  - task: ArtifactoryConan@1
-    inputs:
-      conanCommand: 'Add Remote'
-      remoteName: 'bandi-cloud'
-      artifactoryService: 'bandi-conan-vignesh'
-      conanRepo: 'conan-local'
-      purgeExistingRemotes: false
-- task: ArtifactoryConan@1
-  inputs:
-    conanCommand: 'Install'
-    pathOrReference: './conan/conanfile.txt'
-    buildName: '$(Build.DefinitionName)'
-    buildNumber: '$(Build.BuildNumber)'
-- task: ArtifactoryConan@1
-  inputs:
-    conanCommand: 'Upload'
-    patternOrReference: 'conan upload "*" --all -r bandi-cloud -c'
-    buildName: '$(Build.DefinitionName)'
-    buildNumber: '$(Build.BuildNumber)'
+stages:
+  - stage: Build
+    jobs:
+
+    - job: build
+      timeoutInMinutes: '10'
+      displayName: Build
+      steps:
+
+      - bash: pip list
+        displayName: Get pip list
+
+      # - bash: |
+      #       mkdir -p $(build.artifactstagingdirectory)/.conan/profiles/
+      #       touch $(build.artifactstagingdirectory)/.conan/profiles/default
+      #       echo empty default: $(build.artifactstagingdirectory)/.conan/profiles/default
+      #   displayName: Conan fake config
+
+
+      - task: ArtifactoryConan@1
+        displayName: 'Conan Config Install'
+        inputs:
+          conanCommand: 'Config Install'
+          configZipPath: conan.conf
+          conanUserHome: '$(build.artifactstagingdirectory)'
+          workingDirectory: '$(build.sourcesdirectory)'
+          collectBuildInfo: false
+
+      - task: ArtifactoryConan@1
+        displayName: 'Build DSP'
+        inputs:
+          conanCommand: Create
+          createPath: .
+          createReference: $(projectName)/$(channel)
+          #extraArguments: '-some-option'
+          conanUserHome: '$(build.artifactstagingdirectory)'
+          workingDirectory: '$(build.sourcesdirectory)'
+          collectBuildInfo: false
+      
+      - bash: |
+          echo "artifact_property_build.test=/text" >> .conan/artifacts.properties
+        workingDirectory:  '$(build.artifactstagingdirectory)'
+        displayName: create artifacts.properties
+
+      - task: ArtifactoryConan@1
+        displayName: 'Conan Add Remote'
+        inputs:
+          conanCommand: 'Add Remote'
+          remoteName: jfrog
+          artifactoryService: Artifactory
+          conanRepo: conan.local
+          purgeExistingRemotes: true
+          conanUserHome: '$(build.artifactstagingdirectory)'
+          workingDirectory: '$(build.sourcesdirectory)'
+          collectBuildInfo: false
+
+      - task: ArtifactoryConan@1
+        displayName: 'Conan Upload'
+        inputs:
+          conanCommand: Upload
+          patternOrReference: '*@$(projectName)/$(channel)'
+          extraArguments: '--all'
+          conanUserHome: '$(build.artifactstagingdirectory)'
+          workingDirectory: '$(build.sourcesdirectory)'
+          collectBuildInfo: false
