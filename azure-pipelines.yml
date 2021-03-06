@@ -57,7 +57,7 @@ stages:
           collectBuildInfo: false
       
       - bash: |
-          echo "artifact_property_build.test=/text" >> .conan/artifacts.properties
+          echo "artifact_property_build.test=/text" >> ~/.conan/artifacts.properties
         workingDirectory:  '$(build.artifactstagingdirectory)'
         displayName: create artifacts.properties
 
