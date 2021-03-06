@@ -5,14 +5,6 @@ trigger:
 - release/*
 - develop
 - feature/*
-  
-  
-variables:
-  - group: Artifactory
-  - name: projectName
-    value: DeleteMe
-  - name: channel
-    value: Experimental
 
 pool:
   vmImage: 'Ubuntu-18.04'
