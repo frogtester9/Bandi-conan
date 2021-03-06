@@ -26,9 +26,7 @@ stages:
       displayName: Build
       steps:
 
-      - bash: pip list
       - bash: pip install conan
-        displayName: Get pip list
 
       # - bash: |
       #       mkdir -p $(build.artifactstagingdirectory)/.conan/profiles/
