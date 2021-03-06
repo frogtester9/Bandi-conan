@@ -40,8 +40,8 @@ stages:
         inputs:
           conanCommand: 'Config Install'
           configZipPath: conan.conf
-          conanUserHome: '$(build.artifactstagingdirectory)'
-          workingDirectory: '$(build.sourcesdirectory)'
+          conanUserHome: ~/.conan/
+          workingDirectory: ~/.conan/
           collectBuildInfo: false
 
       - task: ArtifactoryConan@1
@@ -51,13 +51,13 @@ stages:
           createPath: .
           createReference: $(projectName)/$(channel)
           #extraArguments: '-some-option'
-          conanUserHome: '$(build.artifactstagingdirectory)'
-          workingDirectory: '$(build.sourcesdirectory)'
+          conanUserHome: ~/.conan/
+          workingDirectory: ~/.conan/
           collectBuildInfo: false
       
       - bash: |
           echo "artifact_property_build.test=/text" >> ~/.conan/artifacts.properties
-        workingDirectory:  '$(build.artifactstagingdirectory)'
+        workingDirectory: ~/.conan/
         displayName: create artifacts.properties
 
       - task: ArtifactoryConan@1
@@ -68,8 +68,8 @@ stages:
           artifactoryService: bandi-conan-vignesh
           conanRepo: conan.local
           purgeExistingRemotes: true
-          conanUserHome: '$(build.artifactstagingdirectory)'
-          workingDirectory: '$(build.sourcesdirectory)'
+          conanUserHome: ~/.conan/
+          workingDirectory: ~/.conan/
           collectBuildInfo: false
 
       - task: ArtifactoryConan@1
@@ -78,6 +78,6 @@ stages:
           conanCommand: Upload
           patternOrReference: '*@$(projectName)/$(channel)'
           extraArguments: '--all'
-          conanUserHome: '$(build.artifactstagingdirectory)'
-          workingDirectory: '$(build.sourcesdirectory)'
+          conanUserHome: ~/.conan/
+          workingDirectory: ~/.conan/
           collectBuildInfo: false
