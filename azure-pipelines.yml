@@ -44,7 +44,6 @@ stages:
           conanUserHome: '$(build.artifactstagingdirectory)'
           workingDirectory: '$(build.sourcesdirectory)'
           collectBuildInfo: false
-
       - task: ArtifactoryConan@1
         displayName: 'Build DSP'
         inputs:
