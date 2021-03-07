@@ -21,13 +21,9 @@ stages:
   - stage: Build
     jobs:
 
-
-    - job: build
-      timeoutInMinutes: '10'
-      displayName: Build
       steps:
-        - run: apt-get update
-        - run: apt-get install -y conan
+        - run: apt install python3-pip -y
+        - run: pip3 install conan -y
         - run: which conan
 
 
