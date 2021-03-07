@@ -20,6 +20,12 @@ pool:
 stages:
   - stage: Build
     jobs:
+resources:
+  containers:
+    - container: Linux # reusable alias
+      image: vltdrives-buildimage-linux-baseimage:latest
+      options: -u root
+      endpoint: Artifactory-docker
 
     - job: build
       timeoutInMinutes: '10'
