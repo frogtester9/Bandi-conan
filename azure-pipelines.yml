@@ -20,19 +20,17 @@ pool:
 stages:
   - stage: Build
     jobs:
-resources:
-  containers:
-    - container: Linux # reusable alias
-      image: vltdrives-buildimage-linux-baseimage:latest
-      options: -u root
-      endpoint: Artifactory-docker
 
     - job: build
       timeoutInMinutes: '10'
       displayName: Build
       steps:
 
-      - bash: pip install conan
+      - bash: apt-get install pip3 -y
+      - bash: pip3 install conan
+      - bash: git clone https://github.com/conan-io/conan.git conan_src
+      - bash: cd conan_src
+      - bash: python -m pip install -e 
 
       # - bash: |
       #       mkdir -p $(build.artifactstagingdirectory)/.conan/profiles/
