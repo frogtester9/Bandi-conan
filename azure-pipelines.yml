@@ -2,6 +2,10 @@ name: $(Date:yyyyMMdd)$(Rev:.r)
 
 trigger:
 - master
+- release/*
+- develop
+- feature/*
+  
   
 variables:
   - group: Artifactory
@@ -10,14 +14,13 @@ variables:
   - name: channel
     value: Experimental
 
-pool:
-  vmImage: 'Ubuntu-18.04'
-  steps:
-        - run: apt install python3-pip -y
-        - run: pip3 install conan -y
-        - run: mkdir -p /home/vsts/work/1/a
-        - run: ln -s /usr/local/bin/conan /home/vsts/work/1/a
-
+resources:
+  containers:
+    - container: Linux # reusable alias
+      image: vltdrives-buildimage-linux-baseimage:latest
+      options: -u root
+      endpoint: Artifactory-docker
+      
 stages:
   - stage: Build
     jobs:
